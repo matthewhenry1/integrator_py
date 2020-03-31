@@ -5,7 +5,7 @@ environment = {
 }
 
 file = {
-    "file_name": "data/dynamic_teams.csv",  # absolute path recommended
+    "file_name": "data/dynamic_teams.csv",  # absolute path recommended for Windows, Linux can remain as is
     "encoding": "utf-8-sig"
 }
 
@@ -20,7 +20,7 @@ role_mapping = {
 thread_count = 15 # maximum concurrent threads that will be used in parallel processing to update xMatters. Do not exceed 30 as that will simulate DoS.
 
 logging = {
-    "file_name": "log.log",  # absolute path recommended
+    "file_name": "log.log",  # absolute path recommended for Windows, Linux can remain as is
     "max_bytes": 16 * 1024 * 1024,  # 16mb is default
     "back_up_count": 2,
     "level": 10
