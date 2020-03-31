@@ -21,7 +21,7 @@ From within `/integrator_py/src` exists the following scripts available for exec
 
 ## Pro Tips
 * If you feel like your `integrator_py/src/` is becoming crowded, you can move your logs and config to a dedicated folder, i.e. `/integrator_py/src/log/log.log` & `/integrator_py/src/config/config.py`
-* You can also move your core scripts to their own folder as well, i.e. `add_members.py`, `dynamic_teams.py`, and `on_call.py` could exist in a directory like: `/integrator_py/src/scripts/<they_exist_here_now>`. _**HOWEVER**_ this is the sibling directory concept in Python, so if you decide to do this or pursue this approach, it is required to execute scripts from `/integrator_py/src/` and must be executed from the root directory as: `python3 -m subpackage1.script1`. So using the example provided it would be `python3 -m scripts.on_call.py` 
+* You can also move your core scripts to their own folder as well, i.e. `add_members.py`, `dynamic_teams.py`, and `on_call.py` could exist in a directory like: `/integrator_py/src/scripts/<they_exist_here_now>`. _**HOWEVER**_ this is the sibling directory concept in Python, so if you decide to do this or pursue this approach, it is required to execute scripts from `/integrator_py/src/` and must be executed from the root directory as: `python3 -m subpackage1.script1`. So using the example provided it would be `python3 -m scripts.on_call.py`
 * The `integrator_py/src/xmatters/` package isn't actually needed, like `requests`, the `xmatters` package is available to install via `pip3 install pyxmatters`. It's available here: [https://pypi.org/project/pyxmatters/](https://pypi.org/project/pyxmatters/). _**HOWEVER**_ if this package is going to reside for Production usage, the `xmatters` directory must be provided locally as changes, updates, and or even improvements could break the design of whatever script/package is leveraging it.
 * See [https://github.com/matthewhenry1/pyxmatters/blob/master/samples/test_script.py](https://github.com/matthewhenry1/pyxmatters/blob/master/samples/test_script.py) for additional examples interfacing with `pyxmatters`
 
@@ -61,7 +61,7 @@ role_mapping = {
 }
 
 logging = {
-    "file_name": "/Users/matthenry/role-sync-py/log.log", # absolute path recommended
+    "file_name": "log.log", # absolute path recommended
     "max_bytes": 16 * 1024 * 1024, # 16mb is default
     "back_up_count": 2,
     "level": 20
