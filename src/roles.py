@@ -28,7 +28,7 @@ def main() -> object:
             roles.add(role)
     role_filter = ",".join(roles)
     people = xm_person.get_people_collection("&embed=roles&roles=" + role_filter) # execute search on users, people returns a list of the full xMatters person object record
-    log.debug("people: " + str(people))
+    log.debug("people: " + json.dumps(people))
 
     # 2. query for all membership and build a list that contains dictionary with group name, set of unique users, and list of roles
     # Example: [{"users": {"user_1","user_2","user_3",},"roles": ["Role_1", "Role_2"]}, {"users": {"user_4","user_5","user_6",},"roles": ["Role_2", "Role_3"]}]
@@ -40,7 +40,7 @@ def main() -> object:
                 "users": users,
                 "roles": item["roles"]
             })
-    log.debug("unstructured_role_users_mapping: " + str(unstructured_role_users_mapping))
+    log.debug("unstructured_role_users_mapping: " + json.dumps(unstructured_role_users_mapping))
 
     # 3. Now it"s time to normalize the above data to make it useful later in the process,
     # Manipulating Example above: [{"role": "Role_1", "users": {"user_2", "user_3", "user_1"}}, {"role": "Role_2", "users": {"user_2", "user_3", "user_1", "user_6", "user_4", "user_5"}}, {"role": "Role_3", "users": {"user_6", "user_4", "user_5"}}]
@@ -64,7 +64,7 @@ def main() -> object:
                         "role": role
                     })
 
-    log.debug("role_users_mapping: " + str(role_users_mapping))
+    log.debug("role_users_mapping: " + json.dumps(role_users_mapping))
 
     # 4. We must find the users that need an elevated role but do not have an elevated role already
     role_users = set()
@@ -118,12 +118,12 @@ def main() -> object:
             request["data"]["roles"].append(config.role_mapping["default_role"])
 
         if update_required:
-            log.info('Adding to the request_queue: ' + str(request))
+            log.info('Adding to the request_queue: ' + json.dumps(request))
             request_queue.append(request)
 
     # 6. Process the updates
     if len(request_queue) > 0:
-        log.info("Executing updates with request_queue: " + str(request_queue))
+        log.info("Executing updates with request_queue: " + json.dumps(request_queue))
         process_collection = xm_collection.create_collection(xm_person.modify_person, request_queue, config.thread_count)
 
         log.info("User update success: " + str(process_collection["response"]))
