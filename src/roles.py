@@ -28,7 +28,7 @@ def main() -> object:
             roles.add(role)
     role_filter = ",".join(roles)
     people = xm_person.get_people_collection("&embed=roles&roles=" + role_filter) # execute search on users, people returns a list of the full xMatters person object record
-    # log.debug("people: " + str(people))
+    log.debug("people: " + str(people))
 
     # 2. query for all membership and build a list that contains dictionary with group name, set of unique users, and list of roles
     # Example: [{"users": {"user_1","user_2","user_3",},"roles": ["Role_1", "Role_2"]}, {"users": {"user_4","user_5","user_6",},"roles": ["Role_2", "Role_3"]}]
@@ -40,7 +40,7 @@ def main() -> object:
                 "users": users,
                 "roles": item["roles"]
             })
-    # log.debug("unstructured_role_users_mapping: " + str(unstructured_role_users_mapping))
+    log.debug("unstructured_role_users_mapping: " + str(unstructured_role_users_mapping))
 
     # 3. Now it"s time to normalize the above data to make it useful later in the process,
     # Manipulating Example above: [{"role": "Role_1", "users": {"user_2", "user_3", "user_1"}}, {"role": "Role_2", "users": {"user_2", "user_3", "user_1", "user_6", "user_4", "user_5"}}, {"role": "Role_3", "users": {"user_6", "user_4", "user_5"}}]
@@ -78,7 +78,7 @@ def main() -> object:
 
     diff_users = role_users.difference(people_users)
     for user_name in diff_users:
-        person = xm_person.getPerson(user_name)
+        person = xm_person.get_person(user_name)
         if person:
             people.append(person)
 
