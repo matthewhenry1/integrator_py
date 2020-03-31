@@ -126,8 +126,8 @@ def main() -> object:
         log.info("Executing updates with request_queue: " + json.dumps(request_queue))
         process_collection = xm_collection.create_collection(xm_person.modify_person, request_queue, config.thread_count)
 
-        log.info("User update success: " + str(process_collection["response"]))
-        log.info("User update failures: " + str(process_collection["errors"]))
+        log.info("User update success: " + json.dumps(process_collection["response"]))
+        log.info("User update failures: " + json.dumps(process_collection["errors"]))
     else:
         log.info("No updates required")
 
