@@ -2,11 +2,8 @@
 
 ## Overview
 From within `/integrator_py/src` exists the following scripts available for execution:
-* `/integrator_py/src/rest_test_script.py`: Examples for using the rest package in pyxmatters
-* `/integrator_py/src/util_test_script.py`: Exmaples for using the util package in pyxmatters
 * `/integrator_py/src/add_members.py`: Creates groups and add members to created groups
 * `/integrator_py/src/dynamic_teams.py`: Creates dynamic teams
-* `/integrator_py/src/on_call.py`: Queries for all active groups in xMatters and logs their on call schedule to the log. Perhaps something more on this for the future.
 * `/integrator_py/src/roles.py`: This script is responsible synchronizing roles based on group membership
 
 ## Installation & Required Dependencies
