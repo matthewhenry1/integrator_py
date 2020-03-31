@@ -48,7 +48,7 @@ The role synchronization is designed to take a JSON format like below and based 
 To configure the role sync, open the `config.py`. Below are the configurations available. The integration is designed to leverage a _Library_ in xMatters so that a user can define the role mapping in a Web interface without having to access a server. Or the role mapping can be accomplished using a local JSON file. The JSON file must match the structure outlined above.
 ```
 environment = {
-    "url": "https://.xmatters.com",
+    "url": "https://.xmatters.com",  # ensure that there's no / at the end
     "username": "username",
     "password": "password"
 }
@@ -61,7 +61,7 @@ role_mapping = {
 }
 
 logging = {
-    "file_name": "log.log", # absolute path recommended
+    "file_name": "log.log", # absolute path recommended for Windows, Linux can remain as is
     "max_bytes": 16 * 1024 * 1024, # 16mb is default
     "back_up_count": 2,
     "level": 20
