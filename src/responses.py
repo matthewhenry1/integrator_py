@@ -24,7 +24,7 @@ def main() -> object:
     today_date = '2020-04-03'
     log.info(today_date)
     events = xm_event.get_events(
-        'form=' + urllib.parse.quote('Resiliency Testing', safe='') + '&from=' + today_date +
+        'form=' + urllib.parse.quote(config.response['form'], safe='') + '&from=' + today_date +
         urllib.parse.quote('T00:00:00.000Z', safe=''))
 
     log.info('Received events ' + json.dumps(events))
