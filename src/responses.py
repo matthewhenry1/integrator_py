@@ -24,7 +24,7 @@ def main() -> object:
     today_date = '2020-04-03'
     log.info(today_date)
     events = xm_event.get_events(
-        'form=' + urllib.parse.quote(config.response['form'], safe='') + '&from=' + today_date +
+        'form=' + urllib.parse.quote(config.responses['form'], safe='') + '&from=' + today_date +
         urllib.parse.quote('T00:00:00.000Z', safe=''))
 
     log.info('Received events ' + json.dumps(events))
@@ -36,29 +36,26 @@ def main() -> object:
     for event in events['data']:
 
         event_user_delivery = xm_event.get_user_deliveries(event['id'], 'at=' + str(
-            current_date_time.strftime('%Y-%m-%dT%H:%M:%SZ')) + '&offset=0&limit=100')
+            current_date_time.strftime('%Y-%m-%dT%H:%M:%SZ')) + '&offset=0&limit='+str(config.responses['page_size']))
 
         if not event_user_delivery:
             log.info('No log data found for event id ' + event['eventId'] + ' moving to next event id.')
             continue
 
-        if event_user_delivery['total'] > 100:
-            page_size = 100
-            thread_count = 10
+        # if above the page size limit execute the collection
+        if event_user_delivery['total'] > config.responses['page_size']:
             param_data = {
-                "filter_url": 'at=' + str(current_date_time.strftime('%Y-%m-%dT%H:%M:%SZ')),
+                "url_filter": 'at=' + str(current_date_time.strftime('%Y-%m-%dT%H:%M:%SZ')),
                 "event_id": event['id']
             }
-
-            event_user_delivery_collection = xm_collection.get_collection(xm_event.get_user_deliveries, event_user_delivery['total'], page_size, param_data, thread_count)
+            event_user_delivery_collection = xm_collection.get_collection(xm_event.get_user_deliveries, event_user_delivery['total'], config.responses['page_size'], param_data, config.responses['thread_count'])
             event_user_delivery = event_user_delivery_collection['response']
-        else:
+        else:  # otherwise continue on with that initial request
             event_user_delivery = event_user_delivery['data']
 
+        log.debug('Retrieved event_user_delivery data: ' + json.dumps(event_user_delivery))
         log.info('Retrieved event_user_delivery ' + str(len(event_user_delivery)))
         counter = 0
-
-        log.debug('Retrieved event_user_delivery data - ' + json.dumps(event_user_delivery))
 
         for data in event_user_delivery:
             try:
@@ -67,32 +64,40 @@ def main() -> object:
                                          response=data['response']['text'],
                                          event_created=str(datetime.datetime.fromisoformat(
                                              event['created'].replace('+0000', "")).isoformat()),
-                                         retrieved_date_time=str(current_date_time.isoformat())))
+                                         retrieved_date_time=str(current_date_time.isoformat()),
+                                         delivery_status=data['deliveryStatus']))
+                elif data['deliveryStatus'] == "DELIVERED":
+                    csv_data.append(dict(targetName=data['person']['targetName'],
+                                         response="",
+                                         event_created=str(datetime.datetime.fromisoformat(
+                                             event['created'].replace('+0000', "")).isoformat()),
+                                         retrieved_date_time=str(current_date_time.isoformat()),
+                                         delivery_status=data['deliveryStatus']))
                     counter = counter + 1
             except Exception as e:
                 log.error('Exception ' + str(e) + ' on line:  ' + str(data))
 
-        log.info('Event ID ' + event['eventId'] + ' count of responders: ' + str(counter))
+        log.info('Event ID ' + event['eventId'] + ' count of user delivery data: ' + str(counter))
 
-    log.info('Found Responders: ' + str(len(csv_data)))
+    log.info('Found Number of Rows for User Delivery Data: ' + str(len(csv_data)))
 
     if len(csv_data) > 0:
-        with open(config.file['file_name'], 'w', newline='', encoding=config.file['encoding']) as csv_file:
+        with open(config.responses['file_name'], 'w', newline='', encoding=config.responses['encoding']) as csv_file:
             csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
             
             # write the header 
-            csv_writer.writerow(['targetName', 'response', 'event_created', 'retrieved_date_time'])
+            csv_writer.writerow(['targetName', 'response', 'event_created', 'retrieved_date_time', 'delivery_status'])
             
             # write the values
             for row in csv_data:
-                csv_writer.writerow([row['targetName'], row['response'], row['event_created'], row['retrieved_date_time']])
+                csv_writer.writerow([row['targetName'], row['response'], row['event_created'], row['retrieved_date_time'], row['delivery_status']])
 
 if __name__ == "__main__":
     # configure the logging
-    logging.basicConfig(level=config.logging["level"], datefmt="%m-%d-%Y %H:%M:%Srm ",
+    logging.basicConfig(level=config.responses['logging']["level"], datefmt="%m-%d-%Y %H:%M:%Srm ",
                         format="%(asctime)s %(name)s %(levelname)s: %(message)s",
-                        handlers=[RotatingFileHandler(config.logging["file_name"], maxBytes=config.logging["max_bytes"],
-                                                      backupCount=config.logging['back_up_count'])])
+                        handlers=[RotatingFileHandler(config.responses['logging']["file_name"], maxBytes=config.responses['logging']["max_bytes"],
+                                                      backupCount=config.responses['logging']['back_up_count'])])
     log = logging.getLogger(__name__)
 
     # time start

@@ -113,7 +113,7 @@ class xMattersCollection(xMattersCollectionThread):
 
     def execute_get(self, method, thread, pages, page_size, param_data):
         for i in range(len(pages)):
-            self.log.info("execute_get: Thread number: " + str(thread) + " Executing Method: " + str(method) +
+            self.log.debug("execute_get: Thread number: " + str(thread) + " Executing Method: " + str(method) +
                           " with Incoming pages: " + str(pages[i]) + ' page_size ' + str(page_size) +
                           ' with param_data: ' + str(param_data))
 
@@ -125,11 +125,11 @@ class xMattersCollection(xMattersCollectionThread):
             self.log.debug("execute_create: Thread number: " + str(thread) + "Executing Method: " + str(method) +
                            " with Param Data: " + str(params))
 
-            if params['filter_url']:
-                params['filter_url'] = params['filter_url'] + "&offset=" + str(pages[i]) + "&limit=" + str(page_size)
+            if params['url_filter']:
+                params['url_filter'] = params['url_filter'] + "&offset=" + str(pages[i]) + "&limit=" + str(page_size)
 
             response = method(**params)
             if response:
-                self.response.append({"request_body": params['filter_url'], "response_body": response})
+                self.response.append({"request_body": params['url_filter'], "response_body": response})
             else:
-                self.errors.append(params['filter_url'])
+                self.errors.append(params['url_filter'])

@@ -14,11 +14,11 @@ class xMattersGroup(object):
         self.__request = request
         self.__log = logging.getLogger(__name__)
 
-    def get_group(self, group_id, filter_url="?embed=supervisors"):
+    def get_group(self, group_id, url_filter="?embed=supervisors"):
         def_name = "get_group "
         try:
             self.__log.debug(def_name + "Getting Group: " + group_id)
-            response = self.__request.get("/api/xm/1/groups/" + urllib.parse.quote(group_id, safe='') + filter_url)
+            response = self.__request.get("/api/xm/1/groups/" + urllib.parse.quote(group_id, safe='') + url_filter)
 
         except Exception as e:
             self.__log.error(def_name + "Unexpected exception:" + str(e))
@@ -28,11 +28,11 @@ class xMattersGroup(object):
 
         return response
 
-    def get_groups(self, filter_url="?offset=0&limit=1000"):
+    def get_groups(self, url_filter="?offset=0&limit=1000"):
         def_name = "get_groups "
         try:
             self.__log.debug(def_name + "Getting Groups")
-            response = self.__request.get("/api/xm/1/groups" + filter_url)
+            response = self.__request.get("/api/xm/1/groups" + url_filter)
 
         except Exception as e:
             self.__log.error(def_name + "Unexpected exception:" + str(e))
@@ -84,14 +84,14 @@ class xMattersGroup(object):
 
         return response
 
-    def get_group_collection(self, filter_url=''):
+    def get_group_collection(self, url_filter=''):
         def_name = "get_group_collection "
         try:
-            filter_url = self.__parse_filter(filter_url)
+            url_filter = self.__parse_filter(url_filter)
 
-            self.__log.debug(def_name + "Getting Groups Collection, with filter_url: " + filter_url)
+            self.__log.debug(def_name + "Getting Groups Collection, with url_filter: " + url_filter)
 
-            group = self.get_groups("?offset=0&limit=1000" + filter_url)
+            group = self.get_groups("?offset=0&limit=1000" + url_filter)
 
             if not group:
                 self.__log.debug(def_name + "Groups Not Retrieved")
@@ -110,7 +110,7 @@ class xMattersGroup(object):
                 p = p + count
 
                 if p < total:
-                    group = self.get_groups("?offset="+str(p)+"&limit=1000"+filter_url)
+                    group = self.get_groups("?offset="+str(p)+"&limit=1000"+url_filter)
                     count = group["count"]
 
         except Exception as e:
@@ -121,11 +121,11 @@ class xMattersGroup(object):
 
         return groups
 
-    def __parse_filter(self, filter_url=''):
+    def __parse_filter(self, url_filter=''):
         def_name = "__parse_filter "
         new_filter = ''
         try:
-            for filter_str in filter_url.split('&'):
+            for filter_str in url_filter.split('&'):
                 if filter_str == '':
                     new_filter = new_filter + filter_str
                 else:
