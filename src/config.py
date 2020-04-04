@@ -5,7 +5,7 @@ environment = {
 }
 
 file = {
-    "file_name": "bnym_response.csv",  # absolute path recommended for Windows, Linux can remain as is
+    "file_name": "user_response.csv",  # absolute path recommended for Windows, Linux can remain as is
     "encoding": "utf-8"
 }
 
