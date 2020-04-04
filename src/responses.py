@@ -42,12 +42,23 @@ def main() -> object:
             log.info('No log data found for event id ' + event['eventId'] + ' moving to next event id.')
             continue
 
-        log.info('Retrieved event_user_delivery ' + str(len(event_user_delivery['data'])))
+        if event_user_delivery['total'] > 100:
+            page_size = 100
+            thread_count = 10
+            param_data = {
+                "filter_url": 'at=' + str(current_date_time.strftime('%Y-%m-%dT%H:%M:%SZ')),
+                "event_id": event['id']
+            }
+
+            event_user_delivery_collection = xm_collection.get_collection(xm_event.get_user_deliveries, event_user_delivery['total'], page_size, param_data, thread_count)
+            event_user_delivery = event_user_delivery_collection['response']
+
+        log.info('Retrieved event_user_delivery ' + str(len(event_user_delivery)))
         counter = 0
 
-        log.info('Retrieved event_user_delivery data - ' + json.dumps(event_user_delivery))
+        log.debug('Retrieved event_user_delivery data - ' + json.dumps(event_user_delivery))
 
-        for data in event_user_delivery['data']:
+        for data in event_user_delivery:
             try:
                 if data['deliveryStatus'] == "RESPONDED":
                     csv_data.append(dict(targetName=data['person']['targetName'],
@@ -60,7 +71,6 @@ def main() -> object:
                 log.error('Exception ' + str(e) + ' on line:  ' + str(data))
 
         log.info('Event ID ' + event['eventId'] + ' count of responders: ' + str(counter))
-        break
 
     log.info('Found Responders: ' + str(len(csv_data)))
 
@@ -92,6 +102,7 @@ if __name__ == "__main__":
     environment = xmatters.xMattersAPI(config.environment["url"], config.environment["username"],
                                        config.environment["password"])
     xm_event = xmatters.xMattersEvent(environment)
+    xm_collection = xmatters.xMattersCollection(environment)
 
     main()  # execute the main process
 

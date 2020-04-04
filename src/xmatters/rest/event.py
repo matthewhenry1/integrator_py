@@ -49,48 +49,13 @@ class xMattersEvent(object):
             self.__log.debug(def_name + " Getting User Deliveries ")
             response = self.__request.get("/api/xm/1/events/" + event_id + "/user-deliveries?" + filter_url)
 
-            response_data = {
-                "data": response['data']
-            }
-
-            self.__log.info('initial event data - ' + json.dumps(response_data))
-
-            count = int(response['count'])
-
-            self.__log.info('Count: ' + str(count) + ' Total: ' + str(response['total']))
-
-            if self.__has_next_link(response):
-                next_link = response["links"]["next"]
-                self.__log.info('Has next link')
-            else:
-                next_link = False
-
-            # if obj, will loop
-            while next_link:
-                response = self.__request.get(next_link)
-
-                count = int(response['count']) + count
-                self.__log.info('Next Link: ' + str(next_link))
-                self.__log.info('Count: ' + str(count) + ' Total: ' + str(response['total']))
-
-                if response:
-                    for item in response["data"]:
-                        response_data['data'].append(item)
-
-                    if self.__has_next_link(response):
-                        next_link = response["links"]["next"]
-                    else:
-                        next_link = False
-                else:
-                    next_link = False
-
         except Exception as e:
             self.__log.error(def_name + "Unexpected exception:" + str(e))
             response = None
 
         self.__log.debug(def_name + "Returning response: " + str(response))
 
-        return response_data
+        return response
 
     def __has_next_link(self, obj):
         has = True
@@ -100,3 +65,4 @@ class xMattersEvent(object):
         except:
             has = False
         return has
+
