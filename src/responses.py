@@ -52,6 +52,8 @@ def main() -> object:
 
             event_user_delivery_collection = xm_collection.get_collection(xm_event.get_user_deliveries, event_user_delivery['total'], page_size, param_data, thread_count)
             event_user_delivery = event_user_delivery_collection['response']
+        else:
+            event_user_delivery = event_user_delivery['data']
 
         log.info('Retrieved event_user_delivery ' + str(len(event_user_delivery)))
         counter = 0
