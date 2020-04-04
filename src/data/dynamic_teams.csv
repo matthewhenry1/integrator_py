@@ -1,4 +1,4 @@
-﻿targetName,supervisors,observers,operand,criterionType,field,criterionOperand,value
+targetName,supervisors,observers,operand,criterionType,field,criterionOperand,value
 Dynamic Teams 1,jerry.seinfeld,Company Supervisor,OR,CUSTOM_FIELD,City,EQUALS,Philadelphia
 Dynamic Teams 1,jerry.seinfeld,Company Supervisor,OR,CUSTOM_FIELD,City,EQUALS,Washington D.C.
 Dynamic Teams 2,larry.david;jerry.seinfeld,REST Web Service User;Company Supervisor,OR,CUSTOM_FIELD,City,EQUALS,Based at Home

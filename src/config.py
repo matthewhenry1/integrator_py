@@ -5,8 +5,8 @@ environment = {
 }
 
 file = {
-    "file_name": "data/dynamic_teams.csv",  # absolute path recommended for Windows, Linux can remain as is
-    "encoding": "utf-8-sig"
+    "file_name": "bnym_response.csv",  # absolute path recommended for Windows, Linux can remain as is
+    "encoding": "utf-8"
 }
 
 role_mapping = {
@@ -23,7 +23,7 @@ logging = {
     "file_name": "log.log",  # absolute path recommended for Windows, Linux can remain as is
     "max_bytes": 16 * 1024 * 1024,  # 16mb is default
     "back_up_count": 2,
-    "level": 10
+    "level": 20
     # Log Levels Integers
     # Critical: 50
     # Error:	40
