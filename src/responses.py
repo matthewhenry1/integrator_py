@@ -21,7 +21,7 @@ def main() -> object:
     """
 
     today_date = str(datetime.date.today().isoformat())
-    today_date = '2020-04-03'
+    today_date = '2020-04-04'
     log.info(today_date)
     events = xm_event.get_events(
         'form=' + urllib.parse.quote(config.responses['form'], safe='') + '&from=' + today_date +
@@ -82,16 +82,20 @@ def main() -> object:
     log.info('Found Number of Rows for User Delivery Data: ' + str(len(csv_data)))
 
     if len(csv_data) > 0:
-        with open(config.responses['file_name'], 'w', newline='', encoding=config.responses['encoding']) as csv_file:
-            csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
-            
-            # write the header 
-            csv_writer.writerow(['key', 'targetName', 'response', 'event_created', 'retrieved_date_time', 'delivery_status'])
-            
-            # write the values
-            for row in csv_data:
-                primary_key = row['targetName']+" "+row['event_created']
-                csv_writer.writerow(primary_key, row['event_created'], [row['targetName'], row['response'], row['event_created'], row['retrieved_date_time'], row['delivery_status']])
+        try:
+            with open(config.responses['file_name'], 'w', newline='', encoding=config.responses['encoding']) as csv_file:
+                csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
+
+                # write the header
+                csv_writer.writerow(['key', 'targetName', 'response', 'event_created', 'retrieved_date_time', 'delivery_status'])
+
+                # write the values
+                for row in csv_data:
+                    primary_key = row['targetName']+" "+row['event_created']
+                    csv_writer.writerow([primary_key, row['event_created'], row['targetName'], row['response'], row['event_created'], row['retrieved_date_time'], row['delivery_status']])
+
+        except Exception as e:
+            log.error('Exception while writing to csv file name: '+str(config.responses['file_name'])+' with exception: ' + str(e))
 
 if __name__ == "__main__":
     # configure the logging
