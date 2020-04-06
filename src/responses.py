@@ -86,11 +86,12 @@ def main() -> object:
             csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
             
             # write the header 
-            csv_writer.writerow(['targetName', 'response', 'event_created', 'retrieved_date_time', 'delivery_status'])
+            csv_writer.writerow(['key', 'targetName', 'response', 'event_created', 'retrieved_date_time', 'delivery_status'])
             
             # write the values
             for row in csv_data:
-                csv_writer.writerow([row['targetName'], row['response'], row['event_created'], row['retrieved_date_time'], row['delivery_status']])
+                primary_key = row['targetName']+" "+row['event_created']
+                csv_writer.writerow(primary_key, row['event_created'], [row['targetName'], row['response'], row['event_created'], row['retrieved_date_time'], row['delivery_status']])
 
 if __name__ == "__main__":
     # configure the logging
