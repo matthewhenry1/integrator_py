@@ -12,6 +12,7 @@ environment = {
 # Debug:	10
 # Not Set:	0
 
+
 responses = {
     "form": "Form Name",
     "thread_count": 10,
@@ -27,10 +28,10 @@ responses = {
 }
 
 people = {
-    "thread_count": 10,
+    "thread_count": 3,
     "page_size": 1000,
-    "file_name": "users.csv",  # absolute path recommended for Windows, Linux can remain as is
-    "encoding": "utf-8",
+    "property_name": "Emp Status",
+    "property_value": ["P", "L"],
     "logging": {
         "file_name": "log_people.log",  # absolute path recommended for Windows, Linux can remain as is
         "max_bytes": 16 * 1024 * 1024,  # 16mb is default

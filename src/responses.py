@@ -15,7 +15,7 @@ import csv
 def main() -> object:
 
     """
-        1. Query for all events related to the plans and forms and push it to an array
+        1. Query for all events related to a form and push it to an array
         2. Query for audits of each individual event and push it to an array
         3. Write to a CSV
     """
@@ -23,6 +23,7 @@ def main() -> object:
     today_date = str(datetime.date.today().isoformat())
     today_date = '2020-04-04'
     log.info(today_date)
+
     events = xm_event.get_events(
         'form=' + urllib.parse.quote(config.responses['form'], safe='') + '&from=' + today_date +
         urllib.parse.quote('T00:00:00.000Z', safe=''))

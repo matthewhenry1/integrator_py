@@ -122,7 +122,7 @@ class xMattersCollection(xMattersCollectionThread):
             for param in signature.parameters:
                 if param in param_data:
                     params[param] = param_data[param]
-            self.log.debug("execute_create: Thread number: " + str(thread) + "Executing Method: " + str(method) +
+            self.log.debug("execute_get: Thread number: " + str(thread) + "Executing Method: " + str(method) +
                            " with Param Data: " + str(params))
 
             if params['url_filter']:

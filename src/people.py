@@ -11,66 +11,82 @@ import urllib.parse
 import datetime
 import csv
 
+
 # main process
 def main() -> object:
-
     """
-        1. Query for users in an instance and push to an array
-        2. Write to a CSV
+        Background:
+        xMatters Property Name/Value search can only be done one a time,
+        example: /api/xm/1/people?propertyName=Emp%20Status&propertyValue=L&OR&propertyName=Emp%20Status&propertyValue=P
+        results in: {"subcode": "validation.person.search.only_one_propertyName_propertyValue"}
+
+        1. Query for users in xM based on property name/value search criteria
+        2. Push results to an array
+        3. Based on array inspect data and build payload
+        4. With payload update xMatters
     """
-    current_date_time = datetime.datetime.now()
-    people = xm_person.get_people('?offset=0&limit='+str(config.people['page_size']))
 
-    if not people:
-        log.info('No users found from the instance')
-        return
+    # captures the results of the search
+    people = []
 
-    # if above the page size limit execute the collection
-    if people['total'] > config.people['page_size']:
+    for prop_value in config.people['property_value']:
+
+        # build param string
         param_data = {
-            "url_filter": '?embed=roles,devices',
+            "url_filter": '?propertyName=' + urllib.parse.quote(config.people['property_name'], safe='') + '&propertyValue=' + urllib.parse.quote(prop_value, safe=''),
         }
-        people_collection = xm_collection.get_collection(xm_person.get_people, people['total'], config.people['page_size'], param_data, config.people['thread_count'])
-        people = people_collection['response']
-    else:  # otherwise continue on with that initial request
-        people = people['data']
+
+        # get initial page
+        people_search = xm_person.get_people(param_data['url_filter'] + '&offset=0&limit=' + str(config.people['page_size']))
+
+        # if nothing is returned let's skip this search loop
+        if not people_search:
+            log.info('No users found from the instance for search: ' + str(param_data['url_filter']))
+            continue
+
+        # if the total returned from the the search is greater than the config page size, then we have more searching to do
+        if people_search['total'] > config.people['page_size']:
+            people_collection = xm_collection.get_collection(xm_person.get_people, people['total'],
+                                                             config.people['page_size'], param_data,
+                                                             config.people['thread_count'])
+
+            # log and then concat two arrays
+            log.info("Retrieved " + str(len(people_collection['response'])) + " people from search: " + str(param_data['url_filter']))
+            people = people_collection['response'] + people
+        else:
+            # else, continue on with that initial request and concat the two arrays
+            log.info("Retrieved " + str(len(people_search['data'])) + " people from search: " + str(param_data['url_filter']))
+            people = people_search['data'] + people
 
     log.debug('Retrieved people data: ' + json.dumps(people))
     log.info('Retrieved people count: ' + str(len(people)))
 
-    csv_data = []
+    # now let's iterate through, build the payload, and make sure we're only updating users that are ACTIVE
+    request_data = []
     for data in people:
         try:
-            if hasattr(data['properties'], 'Emp Status'):
-                if data['properties']['Emp Status'] != 'L' or data['properties']['Emp Status'] != 'P':
-                    csv_data.append(dict(targetName=data['targetName'],
-                                         retrieved_date_time=str(current_date_time.isoformat())))
-                else:
-                    log.debug('Not adding, User: ' + data['targetName'] + ' has Emp Status of ' + data['properties']['Emp Status'])
-            else:
-                csv_data.append(dict(targetName=data['targetName'],
-                                     retrieved_date_time=str(current_date_time.isoformat())))
+            if data['status'] == "ACTIVE":
+                request_data.append(dict(data=dict(targetName=data['targetName'],
+                                         id=data['id'],
+                                         status="INACTIVE")))
         except Exception as e:
             log.error('Exception ' + str(e) + ' on line:  ' + str(data))
 
-    log.info('Found Number of Rows for People: ' + str(len(csv_data)))
+    log.info('Found Number of Rows for People: ' + str(len(request_data)))
 
-    if len(csv_data) > 0:
-        with open(config.people['file_name'], 'w', newline='', encoding=config.people['encoding']) as csv_file:
-            csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
+    # only execute if there are requests
+    if len(request_data) > 0:
+        person_response = xm_collection.create_collection(xm_person.modify_person, request_data, config.people['thread_count'])
+        log.info("Update response: " + str(person_response["response"]))
+        log.info("Update errors: " + str(person_response["errors"]))
 
-            # write the header
-            csv_writer.writerow(['targetName', 'retrieved_date_time'])
-
-            # write the values
-            for row in csv_data:
-                csv_writer.writerow([row['targetName'], row['retrieved_date_time']])
 
 if __name__ == "__main__":
     # configure the logging
     logging.basicConfig(level=config.people['logging']["level"], datefmt="%m-%d-%Y %H:%M:%Srm ",
                         format="%(asctime)s %(name)s %(levelname)s: %(message)s",
-                        handlers=[RotatingFileHandler(config.people['logging']["file_name"], maxBytes=config.people['logging']["max_bytes"],
+                        handlers=[RotatingFileHandler(config.people['logging']["file_name"],
+                                                      maxBytes=config.people['logging']["max_bytes"],
                                                       backupCount=config.people['logging']['back_up_count'])])
     log = logging.getLogger(__name__)
 
