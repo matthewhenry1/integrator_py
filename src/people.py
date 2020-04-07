@@ -75,7 +75,7 @@ def main() -> object:
         except Exception as e:
             log.error('Exception ' + str(e) + ' on line:  ' + str(data))
 
-    log.info('Found Number of Rows for People: ' + str(len(request_data)))
+    log.info('Number of requests for update: ' + str(len(request_data)))
 
     # only execute if there are requests
     if len(request_data) > 0:

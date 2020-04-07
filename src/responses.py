@@ -93,7 +93,7 @@ def main() -> object:
                 # write the values
                 for row in csv_data:
                     primary_key = row['targetName']+" "+row['event_created']
-                    csv_writer.writerow([primary_key, row['event_created'], row['targetName'], row['response'], row['event_created'], row['retrieved_date_time'], row['delivery_status']])
+                    csv_writer.writerow([primary_key, row['targetName'], row['response'], row['event_created'], row['retrieved_date_time'], row['delivery_status']])
 
         except Exception as e:
             log.error('Exception while writing to csv file name: '+str(config.responses['file_name'])+' with exception: ' + str(e))
