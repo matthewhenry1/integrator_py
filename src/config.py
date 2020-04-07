@@ -1,5 +1,5 @@
 environment = {
-    "url": "https://<instance>.xmatters.com",  # ensure that there's no / at the end
+    "url": "https://<host-name>.xmatters.com",  # ensure that there's no / at the end
     "username": "username",
     "password": "password"
 }
@@ -12,9 +12,8 @@ environment = {
 # Debug:	10
 # Not Set:	0
 
-
 responses = {
-    "form": "Form Name",
+    "form": "Resiliency Testing",
     "thread_count": 10,
     "page_size": 100,
     "file_name": "user_response.csv",  # absolute path recommended for Windows, Linux can remain as is

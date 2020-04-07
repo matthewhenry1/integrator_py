@@ -21,7 +21,7 @@ def main() -> object:
     """
 
     today_date = str(datetime.date.today().isoformat())
-    today_date = '2020-04-04'
+    # today_date = '2020-04-04'  # uncomment to override above to a past date stamp
     log.info(today_date)
 
     events = xm_event.get_events(
