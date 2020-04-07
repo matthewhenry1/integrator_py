@@ -29,34 +29,37 @@ def main() -> object:
     # captures the results of the search
     people = []
 
-    for prop_value in config.people['property_value']:
+    # first loop through the properties object for the property name
+    for prop_name in config.people['properties']:
 
-        # build param string
-        param_data = {
-            "url_filter": '?propertyName=' + urllib.parse.quote(config.people['property_name'], safe='') + '&propertyValue=' + urllib.parse.quote(prop_value, safe=''),
-        }
+        # next loop through the values associated to the individual property
+        for prop_val in config.people['properties'][prop_name]:
+            # build param string
+            param_data = {
+                "url_filter": '?propertyName=' + urllib.parse.quote(prop_name, safe='') + '&propertyValue=' + urllib.parse.quote(prop_val, safe=''),
+            }
 
-        # get initial page
-        people_search = xm_person.get_people(param_data['url_filter'] + '&offset=0&limit=' + str(config.people['page_size']))
+            # get initial page
+            people_search = xm_person.get_people(param_data['url_filter'] + '&offset=0&limit=' + str(config.people['page_size']))
 
-        # if nothing is returned let's skip this search loop
-        if not people_search:
-            log.info('No users found from the instance for search: ' + str(param_data['url_filter']))
-            continue
+            # if nothing is returned let's skip this search loop
+            if not people_search:
+                log.info('No users found from the instance for search: ' + str(param_data['url_filter']))
+                continue
 
-        # if the total returned from the the search is greater than the config page size, then we have more searching to do
-        if people_search['total'] > config.people['page_size']:
-            people_collection = xm_collection.get_collection(xm_person.get_people, people['total'],
-                                                             config.people['page_size'], param_data,
-                                                             config.people['thread_count'])
+            # if the total returned from the the search is greater than the config page size, then we have more searching to do
+            if people_search['total'] > config.people['page_size']:
+                people_collection = xm_collection.get_collection(xm_person.get_people, people['total'],
+                                                                 config.people['page_size'], param_data,
+                                                                 config.people['thread_count'])
 
-            # log and then concat two arrays
-            log.info("Retrieved " + str(len(people_collection['response'])) + " people from search: " + str(param_data['url_filter']))
-            people = people_collection['response'] + people
-        else:
-            # else, continue on with that initial request and concat the two arrays
-            log.info("Retrieved " + str(len(people_search['data'])) + " people from search: " + str(param_data['url_filter']))
-            people = people_search['data'] + people
+                # log and then concat two arrays
+                log.info("Retrieved " + str(len(people_collection['response'])) + " people from search: " + str(param_data['url_filter']))
+                people = people_collection['response'] + people
+            else:
+                # else, continue on with that initial request and concat the two arrays
+                log.info("Retrieved " + str(len(people_search['data'])) + " people from search: " + str(param_data['url_filter']))
+                people = people_search['data'] + people
 
     log.debug('Retrieved people data: ' + json.dumps(people))
     log.info('Retrieved people count: ' + str(len(people)))

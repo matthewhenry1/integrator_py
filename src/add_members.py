@@ -7,6 +7,7 @@ import logging
 import json
 from logging.handlers import RotatingFileHandler
 
+
 # main process
 def main() -> object:
 
@@ -47,7 +48,7 @@ def main() -> object:
                 })
 
             if len(new_data) > 0:
-                member_response = xm_collection.create_collection(xm_shift.add_member_to_shift, new_data, config.thread_count)
+                member_response = xm_collection.create_collection(xm_shift.add_member_to_shift, new_data, config.add_members['thread_count'])
                 log.info("Member response: " + str(member_response["response"]))
                 log.info("Member errors: " + str(member_response["errors"]))
             else:
@@ -60,9 +61,9 @@ def main() -> object:
 if __name__ == "__main__":
 
     # configure the logging
-    logging.basicConfig(level=config.logging["level"], datefmt="%m-%d-%Y %H:%M:%Srm ",
+    logging.basicConfig(level=config.add_members['logging']["level"], datefmt="%m-%d-%Y %H:%M:%Srm ",
                         format="%(asctime)s %(name)s %(levelname)s: %(message)s",
-                        handlers=[RotatingFileHandler(config.logging["file_name"], maxBytes=config.logging["max_bytes"], backupCount=config.logging["back_up_count"])])
+                        handlers=[RotatingFileHandler(config.add_members['logging']["file_name"], maxBytes=config.add_members['logging']["max_bytes"], backupCount=config.add_members['logging']["back_up_count"])])
     log = logging.getLogger(__name__)
 
     # time start
@@ -76,7 +77,7 @@ if __name__ == "__main__":
     xm_person = xmatters.xMattersPerson(environment)
     xm_shift = xmatters.xMattersShift(environment)
     xm_group = xmatters.xMattersGroup(environment)
-    members_file = xmatters.Column(config.file["file_name"], config.file["encoding"])
+    members_file = xmatters.Column(config.add_members['file']["file_name"], config.add_members['file']["encoding"])
 
     # execute the main process
     main()

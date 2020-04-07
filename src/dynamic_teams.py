@@ -7,6 +7,7 @@ import logging
 import json
 from logging.handlers import RotatingFileHandler
 
+
 # main process
 def main() -> object:
 
@@ -59,9 +60,9 @@ def main() -> object:
 if __name__ == "__main__":
 
     # configure the logging
-    logging.basicConfig(level=config.logging["level"], datefmt="%m-%d-%Y %H:%M:%Srm ",
+    logging.basicConfig(level=config.dynamic_teams['logging']["level"], datefmt="%m-%d-%Y %H:%M:%Srm ",
                         format="%(asctime)s %(name)s %(levelname)s: %(message)s",
-                        handlers=[RotatingFileHandler(config.logging["file_name"], maxBytes=config.logging["max_bytes"], backupCount=config.logging["back_up_count"])])
+                        handlers=[RotatingFileHandler(config.dynamic_teams['logging']["file_name"], maxBytes=config.dynamic_teams['logging']["max_bytes"], backupCount=config.dynamic_teams['logging']["back_up_count"])])
     log = logging.getLogger(__name__)
 
     # time start
@@ -73,7 +74,7 @@ if __name__ == "__main__":
     environment = xmatters.xMattersAPI(config.environment["url"], config.environment["username"], config.environment["password"])
     xm_dynamic_teams = xmatters.xMattersDynamicTeams(environment)
     xm_person = xmatters.xMattersPerson(environment)
-    dynamic_teams_file = xmatters.Column(config.file["file_name"], config.file["encoding"])
+    dynamic_teams_file = xmatters.Column(config.dynamic_teams['file']["file_name"], config.dynamic_teams['file']["encoding"])
 
     # execute the main process
     main()

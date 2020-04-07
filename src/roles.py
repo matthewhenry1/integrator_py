@@ -112,10 +112,10 @@ def main() -> object:
                 request["data"]["roles"].remove(role_user["role"])
 
         # set a default role if all roles are removed or just add the Standard User role by default if the user doesn't have it already
-        if (len(request["data"]["roles"]) == 0 and update_required) or config.role_mapping["default_role"] not in request["data"]["roles"]:
+        if (len(request["data"]["roles"]) == 0 and update_required) or config.roles['role_mapping']["default_role"] not in request["data"]["roles"]:
             update_required = True
             log.info("Adding Default Role to Standard User for user: " + request["data"]["targetName"])
-            request["data"]["roles"].append(config.role_mapping["default_role"])
+            request["data"]["roles"].append(config.roles['role_mapping']["default_role"])
 
         if update_required:
             log.info('Adding to the request_queue: ' + str(request))
@@ -124,7 +124,7 @@ def main() -> object:
     # 6. Process the updates
     if len(request_queue) > 0:
         log.info("Executing updates with request_queue: " + str(request_queue))
-        process_collection = xm_collection.create_collection(xm_person.modify_person, request_queue, config.thread_count)
+        process_collection = xm_collection.create_collection(xm_person.modify_person, request_queue, config.roles['thread_count'])
 
         log.info("User update success: " + str(process_collection["response"]))
         log.info("User update failures: " + str(process_collection["errors"]))
@@ -135,9 +135,9 @@ def main() -> object:
 if __name__ == "__main__":
 
     # configure the logging
-    logging.basicConfig(level=config.logging["level"], datefmt="%m-%d-%Y %H:%M:%Srm ",
+    logging.basicConfig(level=config.roles['logging']["level"], datefmt="%m-%d-%Y %H:%M:%Srm ",
                         format="%(asctime)s %(name)s %(levelname)s: %(message)s",
-                        handlers=[RotatingFileHandler(config.logging["file_name"], maxBytes=config.logging["max_bytes"], backupCount=config.logging['back_up_count'])])
+                        handlers=[RotatingFileHandler(config.roles['logging']["file_name"], maxBytes=config.roles['logging']["max_bytes"], backupCount=config.roles['logging']['back_up_count'])])
     log = logging.getLogger(__name__)
 
     # time start
@@ -155,14 +155,14 @@ if __name__ == "__main__":
 
     # retrieve the group-roles mapping
     group_roles = None
-    if config.role_mapping["enable_web_ui"]:
-        libraries = xm_libraries.get_libraries(config.role_mapping["plan_name"])
+    if config.roles['role_mapping']["enable_web_ui"]:
+        libraries = xm_libraries.get_libraries(config.roles['role_mapping']["plan_name"])
         for script in libraries["data"]:
-            if script["name"] == config.role_mapping["library_name"]:
+            if script["name"] == config.roles['role_mapping']["library_name"]:
                 group_roles = json.loads(base64.b64decode(script["script"]))["data"]
                 break
     else:
-        with open(config.role_mapping["local_file_name"]) as f:  # read the json file
+        with open(config.roles['role_mapping']["local_file_name"]) as f:  # read the json file
             group_roles = json.load(f)["data"]
 
     if group_roles:
