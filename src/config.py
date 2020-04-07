@@ -54,16 +54,6 @@ add_members = {
     }
 }
 
-dynamic_teams = {
-    "file_name": "data/dynamic_teams.csv",  # absolute path recommended for Windows, Linux can remain as is
-    "encoding": "utf-8",
-    "logging": {
-        "file_name": "log_dynamic_teams.log",  # absolute path recommended for Windows, Linux can remain as is
-        "max_bytes": 16 * 1024 * 1024,  # 16mb is default
-        "back_up_count": 2,
-        "level": 20
-    }
-}
 
 dynamic_teams = {
     "file_name": "data/dynamic_teams.csv",  # absolute path recommended for Windows, Linux can remain as is
