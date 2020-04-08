@@ -71,7 +71,7 @@ dynamic_teams = {
 
 roles = {
     "thread_count": 5,
-    "role_mapping":{
+    "role_mapping": {
         "default_role": "Standard User",  # default role to be assigned if all roles are removed from the user's profile
         "enable_web_ui": True,
         "plan_name": "Script Runner",  # only leveraged if enable_web_ui is true
