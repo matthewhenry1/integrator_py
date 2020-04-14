@@ -5,6 +5,10 @@ From within `/integrator_py/src` exists the following scripts available for exec
 * `/integrator_py/src/add_members.py`: Creates groups and add members to created groups
 * `/integrator_py/src/dynamic_teams.py`: Creates dynamic teams
 * `/integrator_py/src/roles.py`: This script is responsible synchronizing roles based on group membership
+* `/integrator_py/src/people.py`: This script is responsible for querying users based on a property name and value to then set the users as inactive
+* `/integrator_py/src/response.py`: This script is responsible for querying xmatters events based on a form name and then outputting to a file the user delivery detail
+* `/integrator_py/src/modify_lanugage.py`: This script is responsible for querying xmatters based on user's site affiliation and then setting the profile to a different language such as portuguese
+
 
 ## Installation & Required Dependencies
 1. This package was developed for Python3 only, install the latest Python3 stable version here: [https://www.python.org/downloads/](https://www.python.org/downloads/)

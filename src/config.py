@@ -1,5 +1,5 @@
 environment = {
-    "url": "https:/<instance>.xmatters.com",  # ensure that there's no / at the end
+    "url": "https://<instance>.xmatters.com",  # ensure that there's no / at the end
     "username": "username",
     "password": "password"
 }
@@ -32,10 +32,25 @@ people = {
     "properties": {
         # below are key/value property pairs that will be used for the search that exist on user record
         # values must be stored in lists to support multiple values if single needed, only add one value in lists
-        "Emp Status": ["P", "L"]
+        "Emp Status": ["On Holiday", "On Medical Leave"]
     },
     "logging": {
         "file_name": "log_people.log",  # absolute path recommended for Windows, Linux can remain as is
+        "max_bytes": 16 * 1024 * 1024,  # 16mb is default
+        "back_up_count": 2,
+        "level": 20
+    }
+}
+
+modify_language = {
+    "thread_count": 3,
+    "page_size": 1000,
+    "properties": {
+        # values must be stored in lists to support multiple values if single needed, only add one value in lists
+        "site": ["Site 1", "Site 2"]
+    },
+    "logging": {
+        "file_name": "log_modify_language.log",  # absolute path recommended for Windows, Linux can remain as is
         "max_bytes": 16 * 1024 * 1024,  # 16mb is default
         "back_up_count": 2,
         "level": 20

@@ -16,10 +16,6 @@ import csv
 def main() -> object:
     """
         Background:
-        xMatters Property Name/Value search can only be done one a time,
-        example: /api/xm/1/people?propertyName=Emp%20Status&propertyValue=L&OR&propertyName=Emp%20Status&propertyValue=P
-        results in: {"subcode": "validation.person.search.only_one_propertyName_propertyValue"}
-
         1. Query for users in xM based on property name/value search criteria
         2. Push results to an array
         3. Based on array inspect data and build payload
@@ -30,17 +26,17 @@ def main() -> object:
     people = []
 
     # first loop through the properties object for the property name
-    for prop_name in config.people['properties']:
+    for prop_name in config.modify_language['properties']:
 
         # next loop through the values associated to the individual property
-        for prop_val in config.people['properties'][prop_name]:
+        for prop_val in config.modify_language['properties'][prop_name]:
             # build param string
             param_data = {
-                "url_filter": '?propertyName=' + urllib.parse.quote(prop_name, safe='') + '&propertyValue=' + urllib.parse.quote(prop_val, safe=''),
+                "url_filter": '?'+urllib.parse.quote(prop_name, safe='')+'=' + urllib.parse.quote(prop_val, safe=''),
             }
 
             # get initial page
-            people_search = xm_person.get_people(param_data['url_filter'] + '&offset=0&limit=' + str(config.people['page_size']))
+            people_search = xm_person.get_people(param_data['url_filter'] + '&offset=0&limit=' + str(config.modify_language['page_size']))
 
             # if nothing is returned let's skip this search loop
             if not people_search:
@@ -48,10 +44,10 @@ def main() -> object:
                 continue
 
             # if the total returned from the the search is greater than the config page size, then we have more searching to do
-            if people_search['total'] > config.people['page_size']:
+            if people_search['total'] > config.modify_language['page_size']:
                 people_collection = xm_collection.get_collection(xm_person.get_people, people['total'],
-                                                                 config.people['page_size'], param_data,
-                                                                 config.people['thread_count'])
+                                                                 config.modify_language['page_size'], param_data,
+                                                                 config.modify_language['thread_count'])
 
                 # log and then concat two arrays
                 log.info("Retrieved " + str(len(people_collection['response'])) + " people from search: " + str(param_data['url_filter']))
@@ -68,29 +64,30 @@ def main() -> object:
     request_data = []
     for data in people:
         try:
-            if data['status'] == "ACTIVE":
+            if data['language'] != "pt_BR":
                 request_data.append(dict(data=dict(targetName=data['targetName'],
                                          id=data['id'],
-                                         status="INACTIVE")))
+                                         language="pt_BR")))
         except Exception as e:
             log.error('Exception ' + str(e) + ' on line:  ' + str(data))
 
     log.info('Number of requests for update: ' + str(len(request_data)))
+    log.info('Requests for update: ' + json.dumps(request_data))
 
-    # only execute if there are requests
+    # # only execute if there are requests
     if len(request_data) > 0:
-        person_response = xm_collection.create_collection(xm_person.modify_person, request_data, config.people['thread_count'])
+        person_response = xm_collection.create_collection(xm_person.modify_person, request_data, config.modify_language['thread_count'])
         log.info("Update response: " + str(person_response["response"]))
         log.info("Update errors: " + str(person_response["errors"]))
 
 
 if __name__ == "__main__":
     # configure the logging
-    logging.basicConfig(level=config.people['logging']["level"], datefmt="%m-%d-%Y %H:%M:%Srm ",
+    logging.basicConfig(level=config.modify_language['logging']["level"], datefmt="%m-%d-%Y %H:%M:%Srm ",
                         format="%(asctime)s %(name)s %(levelname)s: %(message)s",
-                        handlers=[RotatingFileHandler(config.people['logging']["file_name"],
-                                                      maxBytes=config.people['logging']["max_bytes"],
-                                                      backupCount=config.people['logging']['back_up_count'])])
+                        handlers=[RotatingFileHandler(config.modify_language['logging']["file_name"],
+                                                      maxBytes=config.modify_language['logging']["max_bytes"],
+                                                      backupCount=config.modify_language['logging']['back_up_count'])])
     log = logging.getLogger(__name__)
 
     # time start
