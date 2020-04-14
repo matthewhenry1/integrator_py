@@ -18,6 +18,7 @@ def main() -> object:
         1. Query for all events related to a form and push it to an array
         2. Query for audits of each individual event and push it to an array
         3. Write to a CSV
+
     """
 
     today_date = str(datetime.date.today().isoformat())
