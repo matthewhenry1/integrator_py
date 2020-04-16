@@ -77,6 +77,7 @@ def main() -> object:
                                              event['created'].replace('+0000', "")).isoformat()),
                                          retrieved_date_time=str(current_date_time.isoformat()),
                                          delivery_status=data['deliveryStatus']))
+                    counter = counter + 1
                 elif data['deliveryStatus'] == "DELIVERED":
                     csv_data.append(dict(targetName=user_name,
                                          response="",
@@ -84,9 +85,10 @@ def main() -> object:
                                              event['created'].replace('+0000', "")).isoformat()),
                                          retrieved_date_time=str(current_date_time.isoformat()),
                                          delivery_status=data['deliveryStatus']))
+                    counter = counter + 1
                 else:
                     log.info('Not adding to csv writer array, unexpected information: ' + json.dumps(data))  # unlikely, but let's just log to make sure
-                counter = counter + 1
+
             except Exception as e:
                 log.error('Exception ' + str(e) + ' on line:  ' + str(data))
 
