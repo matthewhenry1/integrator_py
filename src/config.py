@@ -14,7 +14,7 @@ environment = {
 
 responses = {
     "form": "Form Name",
-    "thread_count": 10,
+    "thread_count": 5,
     "page_size": 100,
     "file_name": "user_response.csv",  # absolute path recommended for Windows, Linux can remain as is
     "encoding": "utf-8",
@@ -100,3 +100,4 @@ roles = {
         "level": 10
     }
 }
+

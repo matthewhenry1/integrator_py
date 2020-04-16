@@ -22,7 +22,7 @@ def main() -> object:
     """
 
     today_date = str(datetime.date.today().isoformat())
-    # today_date = '2020-04-04'  # uncomment to override above to a past date stamp
+    # today_date = '2020-04-15'  # uncomment to override above to a past date stamp
     log.info(today_date)
 
     events = xm_event.get_events(
@@ -31,7 +31,7 @@ def main() -> object:
 
     log.info('Received events ' + json.dumps(events))
 
-    log.info('Getting User Deliveries for ' + str(len(events['data'])))
+    log.info('Getting User Deliveries for ' + str(len(events['data'])) + ' events.')
     current_date_time = datetime.datetime.now()
 
     csv_data = []
@@ -55,31 +55,42 @@ def main() -> object:
         else:  # otherwise continue on with that initial request
             event_user_delivery = event_user_delivery['data']
 
-        log.debug('Retrieved event_user_delivery data: ' + json.dumps(event_user_delivery))
-        log.info('Retrieved event_user_delivery ' + str(len(event_user_delivery)))
+        log.debug('Event ID: ' + event['eventId'] + ', retrieved event_user_delivery data: ' + json.dumps(event_user_delivery))
+        log.info('Event ID: ' + event['eventId'] + ', retrieved event_user_delivery number: ' + str(len(event_user_delivery)))
         counter = 0
 
         for data in event_user_delivery:
             try:
+
+                # temporary workaround implemented to resolve an issue where targetName isn't being provided
+                if 'targetName' in data['person']:
+                    user_name = data['person']['targetName']
+                else:
+                    log.debug('No targetName found for user id: ' + data['person']['id'] + ' attempting to get current targetName')
+                    user_name = (xm_person.get_person(data['person']['id']))['targetName']  # by designed to throw an exception if fails
+                    log.debug('targetName received for ' + user_name)
+
                 if data['deliveryStatus'] == "RESPONDED":
-                    csv_data.append(dict(targetName=data['person']['targetName'],
+                    csv_data.append(dict(targetName=user_name,
                                          response=data['response']['text'],
                                          event_created=str(datetime.datetime.fromisoformat(
                                              event['created'].replace('+0000', "")).isoformat()),
                                          retrieved_date_time=str(current_date_time.isoformat()),
                                          delivery_status=data['deliveryStatus']))
                 elif data['deliveryStatus'] == "DELIVERED":
-                    csv_data.append(dict(targetName=data['person']['targetName'],
+                    csv_data.append(dict(targetName=user_name,
                                          response="",
                                          event_created=str(datetime.datetime.fromisoformat(
                                              event['created'].replace('+0000', "")).isoformat()),
                                          retrieved_date_time=str(current_date_time.isoformat()),
                                          delivery_status=data['deliveryStatus']))
-                    counter = counter + 1
+                else:
+                    log.info('Not adding to csv writer array, unexpected information: ' + json.dumps(data))  # unlikely, but let's just log to make sure
+                counter = counter + 1
             except Exception as e:
                 log.error('Exception ' + str(e) + ' on line:  ' + str(data))
 
-        log.info('Event ID ' + event['eventId'] + ' count of user delivery data: ' + str(counter))
+        log.info('Event ID ' + event['eventId'] + ' count of user delivery data added to csv writer array: ' + str(counter))
 
     log.info('Found Number of Rows for User Delivery Data: ' + str(len(csv_data)))
 
@@ -117,6 +128,7 @@ if __name__ == "__main__":
                                        config.environment["password"])
     xm_event = xmatters.xMattersEvent(environment)
     xm_collection = xmatters.xMattersCollection(environment)
+    xm_person = xmatters.xMattersPerson(environment)
 
     main()  # execute the main process
 
